@@ -1,0 +1,85 @@
+rules_version = '2';
+
+// Firebase Storage Security Rules for Memory Box
+// Step 9A: Production-ready security rules with family sharing support
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // User uploads - users can only access their own files
+    match /user_uploads/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null && 
+                     request.auth.token.admin == true;
+    }
+    
+    // Legacy user files (maintain compatibility)
+    match /users/{userId}/memories/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null && 
+                     request.auth.token.admin == true;
+    }
+    
+    // Shared memories - accessible by family members
+    match /shared/{familyId}/{allPaths=**} {
+      allow read, write: if request.auth != null;
+      // Note: Family permission validation happens at application level
+      // Storage rules don't have access to Firestore for complex validation
+    }
+    
+    // Public assets - readable by authenticated users
+    match /public/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+                      request.auth.token.admin == true;
+    }
+    
+    // System assets - admin only
+    match /system/{allPaths=**} {
+      allow read, write: if request.auth != null && 
+                            request.auth.token.admin == true;
+    }
+    
+    // Admin access path for dashboard uploads and management
+    match /admin/{allPaths=**} {
+      allow read, write: if request.auth != null && 
+                            request.auth.token.admin == true;
+    }
+    
+    // Temporary uploads - 24 hour access for processing
+    match /temp/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && 
+                            request.auth.uid == userId;
+    }
+    
+    // Profile pictures - user access with public read
+    match /profiles/{userId}/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Letter attachments - user-specific
+    match /letters/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null && 
+                     request.auth.token.admin == true;
+    }
+    
+    // Backup files - user-specific
+    match /backups/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null && 
+                     request.auth.token.admin == true;
+    }
+    
+    // Thumbnails and processed images - more permissive for family sharing
+    match /thumbnails/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null;
+    }
+    
+    // Deny all other access
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "memory-box-landing",
+  "version": "1.0.0",
+  "description": "Beautiful landing page for Memory Box app",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx live-server --port=3000 --host=localhost",
+    "build": "echo 'No build step required for static site'",
+    "start": "npx live-server --port=3000 --host=localhost"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  },
+  "keywords": [
+    "memory-box",
+    "landing-page",
+    "static-site"
+  ],
+  "author": "Memory Box Team",
+  "license": "MIT"
+}

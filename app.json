@@ -1,0 +1,78 @@
+{
+  "expo": {
+    "name": "Memory Box",
+    "slug": "memory-box",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#5577FF"
+    },
+    "assetBundlePatterns": [
+      "assets/fonts/**",
+      "assets/images/**",
+      "assets/lottie/**",
+      "assets/icon.png",
+      "assets/splash.png",
+      "assets/adaptive-icon.png",
+      "assets/favicon.png"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.memorybox.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Memory Box needs camera access to capture and save your precious memories.",
+        "NSPhotoLibraryUsageDescription": "Memory Box needs photo library access to organize and save your memories.",
+        "NSMicrophoneUsageDescription": "Memory Box needs microphone access to record audio memories and voice notes.",
+        "NSDocumentsFolderUsageDescription": "Memory Box needs document access to save and organize your memory files.",
+        "NSLocationWhenInUseUsageDescription": "Memory Box can optionally tag memories with location data.",
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": false,
+          "NSExceptionDomains": {}
+        }
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#5577FF"
+      },
+      "package": "com.memorybox.app",
+      "versionCode": 1,
+      "permissions": [
+        "CAMERA",
+        "RECORD_AUDIO",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "READ_MEDIA_IMAGES",
+        "READ_MEDIA_VIDEO",
+        "READ_MEDIA_AUDIO",
+        "ACCESS_NETWORK_STATE",
+        "INTERNET"
+      ],
+      "usesCleartextTraffic": false,
+      "allowBackup": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-camera",
+      "expo-av",
+      "expo-document-picker",
+      "expo-image-picker",
+      "expo-notifications",
+      "expo-secure-store"
+    ],
+    "owner": "eduardoinoa18",
+    "extra": {
+      "eas": {
+        "projectId": "53955767-887c-462c-965f-f773a0fcacbb"
+      }
+    }
+  }
+}

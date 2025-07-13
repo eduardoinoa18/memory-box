@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Box - Preserve Your Precious Moments Forever | Digital Memory Platform</title>
+    <meta name="description" content="Transform your precious memories into a beautiful, organized digital treasure chest. Memory Box helps families capture, organize, and share their most cherished moments with AI-powered features and secure cloud storage.">
+    <meta name="keywords" content="digital memories, photo storage, family moments, memory preservation, AI photo organization, secure cloud storage">
+    <meta name="author" content="Memory Box">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://memorybox.app/">
+    <meta property="og:title" content="Memory Box - Preserve Your Precious Moments Forever">
+    <meta property="og:description" content="Transform your precious memories into a beautiful, organized digital treasure chest with AI-powered features.">
+    <meta property="og:image" content="https://memorybox.app/og-image.jpg">
+    <meta property="og:site_name" content="Memory Box">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://memorybox.app/">
+    <meta property="twitter:title" content="Memory Box - Preserve Your Precious Moments Forever">
+    <meta property="twitter:description" content="Transform your precious memories into a beautiful, organized digital treasure chest with AI-powered features.">
+    <meta property="twitter:image" content="https://memorybox.app/twitter-image.jpg">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://memorybox.app/">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📦%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📦%3C/text%3E%3C/svg%3E">
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    
+    <!-- DNS prefetch for performance -->
+    <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="//ajax.googleapis.com">
+    
+    <!-- Tailwind CSS via CDN for quick setup -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a'
+                        },
+                        secondary: {
+                            50: '#fefce8',
+                            100: '#fef9c3',
+                            400: '#facc15',
+                            500: '#eab308'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Critical CSS -->
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0;
+            padding: 0;
+        }
+        .gradient-bg { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+        }
+        .feature-card { 
+            transition: all 0.3s ease; 
+            will-change: transform;
+        }
+        .feature-card:hover { 
+            transform: translateY(-8px); 
+        }
+        .hero-animation { 
+            animation: float 6s ease-in-out infinite; 
+        }
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        .fade-in {
+            animation: fadeIn 1s ease-in;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+    </style>
+</head>
+<body class="bg-white">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-700 rounded-xl flex items-center justify-center">
+                        <span class="text-white text-xl font-bold">📦</span>
+                    </div>
+                    <span class="text-2xl font-bold text-gray-900">Memory Box</span>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#features" class="text-gray-600 hover:text-blue-600 transition-colors">Features</a>
+                    <a href="#how-it-works" class="text-gray-600 hover:text-blue-600 transition-colors">How It Works</a>
+                    <a href="#pricing" class="text-gray-600 hover:text-blue-600 transition-colors">Pricing</a>
+                    <a href="#contact" class="text-gray-600 hover:text-blue-600 transition-colors">Contact</a>
+                    <button class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                        Download App
+                    </button>
+                </div>
+                
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button class="text-gray-600 hover:text-blue-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white py-20 lg:py-32">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="text-center lg:text-left">
+                    <h1 class="text-4xl md:text-6xl font-bold leading-tight mb-6">
+                        Preserve Your <span class="text-yellow-300">Precious Moments</span> Forever
+                    </h1>
+                    <p class="text-xl md:text-2xl text-blue-100 mb-8 leading-relaxed">
+                        Transform your memories into a beautiful, organized digital treasure chest. 
+                        AI-powered organization, secure family sharing, and intuitive design.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <button class="bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition-colors shadow-lg">
+                            📱 Download for iOS
+                        </button>
+                        <button class="bg-yellow-400 text-blue-900 px-8 py-4 rounded-xl font-bold text-lg hover:bg-yellow-300 transition-colors shadow-lg">
+                            🤖 Download for Android
+                        </button>
+                    </div>
+                    
+                    <div class="flex items-center justify-center lg:justify-start space-x-6 mt-8 text-blue-100">
+                        <div class="flex items-center">
+                            <span class="text-yellow-300 mr-2">⭐⭐⭐⭐⭐</span>
+                            <span>4.9/5 Rating</span>
+                        </div>
+                        <div>
+                            <span class="font-semibold">50K+</span> Happy Families
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center hero-animation">
+                    <div class="relative inline-block">
+                        <div class="w-80 h-80 bg-white/10 rounded-3xl backdrop-blur-md p-8 shadow-2xl">
+                            <div class="text-8xl mb-4">📱</div>
+                            <div class="space-y-3">
+                                <div class="h-4 bg-white/20 rounded-full"></div>
+                                <div class="h-4 bg-white/30 rounded-full w-3/4 mx-auto"></div>
+                                <div class="h-4 bg-white/20 rounded-full w-1/2 mx-auto"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Floating elements -->
+                        <div class="absolute -top-4 -right-4 w-16 h-16 bg-yellow-400 rounded-2xl flex items-center justify-center text-2xl shadow-lg">
+                            📸
+                        </div>
+                        <div class="absolute -bottom-4 -left-4 w-16 h-16 bg-pink-400 rounded-2xl flex items-center justify-center text-2xl shadow-lg">
+                            💕
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">
+                    Why Families Love Memory Box
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Discover powerful features designed to make memory keeping effortless, 
+                    beautiful, and meaningful for your entire family.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="feature-card bg-white p-8 rounded-2xl shadow-lg">
+                    <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center text-3xl mb-6">
+                        🤖
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">AI-Powered Organization</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Our intelligent AI automatically sorts, tags, and organizes your photos by people, 
+                        places, and events. No more endless scrolling to find that perfect moment.
+                    </p>
+                </div>
+                
+                <!-- Feature 2 -->
+                <div class="feature-card bg-white p-8 rounded-2xl shadow-lg">
+                    <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center text-3xl mb-6">
+                        👨‍👩‍👧‍👦
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Family Sharing</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Create private family albums where everyone can contribute. Grandparents, 
+                        siblings, and extended family all stay connected through shared memories.
+                    </p>
+                </div>
+                
+                <!-- Feature 3 -->
+                <div class="feature-card bg-white p-8 rounded-2xl shadow-lg">
+                    <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center text-3xl mb-6">
+                        🔒
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Ultra-Secure Storage</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Bank-grade encryption keeps your memories safe. Automatic backups ensure 
+                        your precious moments are protected forever, accessible only by you.
+                    </p>
+                </div>
+                
+                <!-- Feature 4 -->
+                <div class="feature-card bg-white p-8 rounded-2xl shadow-lg">
+                    <div class="w-16 h-16 bg-yellow-100 rounded-2xl flex items-center justify-center text-3xl mb-6">
+                        ⚡
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Lightning Fast</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Upload, browse, and share thousands of photos in seconds. Our optimized 
+                        platform ensures smooth performance on any device.
+                    </p>
+                </div>
+                
+                <!-- Feature 5 -->
+                <div class="feature-card bg-white p-8 rounded-2xl shadow-lg">
+                    <div class="w-16 h-16 bg-pink-100 rounded-2xl flex items-center justify-center text-3xl mb-6">
+                        🎨
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Beautiful Memories</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Create stunning photo books, slideshows, and memory collections. 
+                        Professional templates make every memory look magazine-worthy.
+                    </p>
+                </div>
+                
+                <!-- Feature 6 -->
+                <div class="feature-card bg-white p-8 rounded-2xl shadow-lg">
+                    <div class="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center text-3xl mb-6">
+                        💾
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Unlimited Storage</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Never worry about running out of space. Store unlimited photos and videos 
+                        with our flexible plans that grow with your family.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">
+                    Getting Started is Simple
+                </h2>
+                <p class="text-xl text-gray-600">
+                    Three easy steps to transform your photo chaos into organized bliss
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-6">
+                        1
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Download & Setup</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Download Memory Box from the App Store or Google Play. 
+                        Create your account and invite family members in minutes.
+                    </p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-green-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-6">
+                        2
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Upload Your Photos</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Import your existing photos or start fresh. Our AI immediately 
+                        begins organizing everything by faces, places, and dates.
+                    </p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-6">
+                        3
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Enjoy & Share</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Browse your beautifully organized memories, create albums, 
+                        and share special moments with loved ones effortlessly.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">
+                    Simple, Transparent Pricing
+                </h2>
+                <p class="text-xl text-gray-600">
+                    Choose the perfect plan for your family's memory-keeping needs
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Free Plan -->
+                <div class="bg-white p-8 rounded-2xl shadow-lg">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Free</h3>
+                        <div class="text-4xl font-bold text-gray-900 mb-2">$0</div>
+                        <div class="text-gray-600">Perfect for getting started</div>
+                    </div>
+                    
+                    <div class="space-y-4 mb-8">
+                        <div class="flex items-center">
+                            <div class="text-green-500 mr-3">✓</div>
+                            <span>5GB Storage</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="text-green-500 mr-3">✓</div>
+                            <span>Basic AI Organization</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="text-green-500 mr-3">✓</div>
+                            <span>Share with 3 Family Members</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="text-green-500 mr-3">✓</div>
+                            <span>Mobile App Access</span>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full bg-gray-200 text-gray-800 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+                        Get Started Free
+                    </button>
+                </div>
+                
+                <!-- Family Plan -->
+                <div class="bg-blue-600 text-white p-8 rounded-2xl shadow-xl transform scale-105">
+                    <div class="text-center mb-8">
+                        <div class="bg-yellow-400 text-blue-900 px-4 py-1 rounded-full text-sm font-semibold mb-4 inline-block">
+                            Most Popular
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2">Family</h3>
+                        <div class="text-4xl font-bold mb-2">$9.99</div>
+                        <div class="text-blue-200">per month</div>
+                    </div>
+                    
+                    <div class="space-y-4 mb-8">
+                        <div class="flex items-center">
+                            <div class="text-yellow-400 mr-3">✓</div>
+                            <span>500GB Storage</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="text-yellow-400 mr-3">✓</div>
+                            <span>Advanced AI Features</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="text-yellow-400 mr-3">✓</div>
+                            <span>Unlimited Family Members</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="text-yellow-400 mr-3">✓</div>
+                            <span>Photo Books & Printing</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="text-yellow-400 mr-3">✓</div>
+                            <span>Priority Support</span>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full bg-white text-blue-600 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
+                        Start Family Plan
+                    </button>
+                </div>
+                
+                <!-- Pro Plan -->
+                <div class="bg-white p-8 rounded-2xl shadow-lg">
+                    <div class="text-center mb-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-2">Pro</h3>
+                        <div class="text-4xl font-bold text-gray-900 mb-2">$19.99</div>
+                        <div class="text-gray-600">per month</div>
+                    </div>
+                    
+                    <div class="space-y-4 mb-8">
+                        <div class="flex items-center">
+                            <div class="text-green-500 mr-3">✓</div>
+                            <span>Unlimited Storage</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="text-green-500 mr-3">✓</div>
+                            <span>AI-Powered Video Editing</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="text-green-500 mr-3">✓</div>
+                            <span>Professional Templates</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="text-green-500 mr-3">✓</div>
+                            <span>White-Label Sharing</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="text-green-500 mr-3">✓</div>
+                            <span>24/7 Premium Support</span>
+                        </div>
+                    </div>
+                    
+                    <button class="w-full bg-purple-600 text-white py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
+                        Go Pro
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">
+                    What Families Are Saying
+                </h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-gray-50 p-8 rounded-2xl">
+                    <div class="text-yellow-400 text-2xl mb-4">⭐⭐⭐⭐⭐</div>
+                    <p class="text-gray-600 mb-6 italic">
+                        "Memory Box transformed our family photo chaos into beautiful, organized albums. 
+                        The AI features are incredible - it found photos of my grandmother I'd forgotten I had!"
+                    </p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold mr-4">
+                            S
+                        </div>
+                        <div>
+                            <div class="font-semibold text-gray-900">Sarah Johnson</div>
+                            <div class="text-gray-600 text-sm">Mother of 3, Seattle</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 p-8 rounded-2xl">
+                    <div class="text-yellow-400 text-2xl mb-4">⭐⭐⭐⭐⭐</div>
+                    <p class="text-gray-600 mb-6 italic">
+                        "Finally, a photo app that the whole family can use! Grandparents love how easy 
+                        it is to see new photos of the grandkids. It's brought our family closer together."
+                    </p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white font-bold mr-4">
+                            M
+                        </div>
+                        <div>
+                            <div class="font-semibold text-gray-900">Mike Chen</div>
+                            <div class="text-gray-600 text-sm">Father of 2, San Francisco</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 p-8 rounded-2xl">
+                    <div class="text-yellow-400 text-2xl mb-4">⭐⭐⭐⭐⭐</div>
+                    <p class="text-gray-600 mb-6 italic">
+                        "The security features give me peace of mind. Knowing our precious family memories 
+                        are safely backed up and encrypted is priceless. Worth every penny!"
+                    </p>
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold mr-4">
+                            L
+                        </div>
+                        <div>
+                            <div class="font-semibold text-gray-900">Lisa Rodriguez</div>
+                            <div class="text-gray-600 text-sm">Teacher, Austin</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="gradient-bg text-white py-20">
+        <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6">
+                Start Preserving Your Memories Today
+            </h2>
+            <p class="text-xl text-blue-100 mb-8 leading-relaxed">
+                Join thousands of families who have already transformed their photo chaos into organized bliss. 
+                Your memories deserve better than being lost in your camera roll.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+                <button class="bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition-colors shadow-lg">
+                    📱 Download for iOS
+                </button>
+                <button class="bg-yellow-400 text-blue-900 px-8 py-4 rounded-xl font-bold text-lg hover:bg-yellow-300 transition-colors shadow-lg">
+                    🤖 Download for Android
+                </button>
+            </div>
+            
+            <div class="text-blue-200 text-sm">
+                Free to start • No credit card required • Cancel anytime
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-gray-900 text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center space-x-2 mb-6">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-700 rounded-xl flex items-center justify-center">
+                            <span class="text-white text-xl font-bold">📦</span>
+                        </div>
+                        <span class="text-2xl font-bold">Memory Box</span>
+                    </div>
+                    <p class="text-gray-400 mb-6 max-w-md">
+                        Making family memories accessible, beautiful, and secure for generations to come. 
+                        Your stories matter, and we're here to help preserve them.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <span class="text-2xl">📘</span>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <span class="text-2xl">🐦</span>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <span class="text-2xl">📷</span>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Product</h4>
+                    <div class="space-y-2">
+                        <a href="#features" class="block text-gray-400 hover:text-white transition-colors">Features</a>
+                        <a href="#pricing" class="block text-gray-400 hover:text-white transition-colors">Pricing</a>
+                        <a href="#" class="block text-gray-400 hover:text-white transition-colors">Security</a>
+                        <a href="#" class="block text-gray-400 hover:text-white transition-colors">API</a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Support</h4>
+                    <div class="space-y-2">
+                        <a href="#" class="block text-gray-400 hover:text-white transition-colors">Help Center</a>
+                        <a href="#" class="block text-gray-400 hover:text-white transition-colors">Contact Us</a>
+                        <a href="#" class="block text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
+                        <a href="#" class="block text-gray-400 hover:text-white transition-colors">Terms of Service</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center">
+                <p class="text-gray-400 text-sm">
+                    © 2025 Memory Box. All rights reserved.
+                </p>
+                <p class="text-gray-400 text-sm mt-4 sm:mt-0">
+                    Made with ❤️ for families everywhere
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Simple JavaScript for mobile menu -->
+    <script>
+        // Mobile menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add smooth scrolling
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

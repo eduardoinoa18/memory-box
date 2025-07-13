@@ -1,0 +1,29 @@
+{
+  "version": 2,
+  "name": "memory-box-landing",
+  "builds": [
+    {
+      "src": "landing-page/**/*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "landing-page/**/*.js",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "landing-page/**/*.css",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "landing-page/$1"
+    }
+  ],
+  "functions": {
+    "landing-page/api/**/*.js": {
+      "maxDuration": 30
+    }
+  }
+}
