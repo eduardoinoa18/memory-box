@@ -1,4 +1,5 @@
 {
   "version": 2,
-  "name": "memory-box-landing"
+  "name": "memory-box-landing",
+  "outputDirectory": "public"
 }
