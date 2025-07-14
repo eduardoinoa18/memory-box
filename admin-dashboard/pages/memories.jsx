@@ -1,22 +1,21 @@
-import { useState } from 'react';
-import DashboardLayout from '../components/DashboardLayout';
-import { Box, Typography, Paper } from '@mui/material';
+import React from 'react';
+import AdminLayout from '../components/AdminLayout';
 
 export default function Memories() {
   return (
-    <DashboardLayout title="Memory Management">
-      <Box>
-        <Typography variant="h4" component="h1" gutterBottom>
+    <AdminLayout title="Memory Management">
+      <div className="p-6">
+        <h1 className="text-3xl font-bold text-gray-900 mb-6">
           Memory Management
-        </Typography>
+        </h1>
         
-        <Paper sx={{ p: 3, mt: 2 }}>
-          <Typography variant="body1">
+        <div className="bg-white rounded-lg shadow p-6">
+          <p className="text-gray-600">
             Memory management features will be available once Firebase integration is configured 
             through the Integration Hub.
-          </Typography>
-        </Paper>
-      </Box>
-    </DashboardLayout>
+          </p>
+        </div>
+      </div>
+    </AdminLayout>
   );
 }
