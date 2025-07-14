@@ -1,16 +1,4 @@
 {
   "version": 2,
-  "name": "memory-box-landing",
-  "builds": [
-    {
-      "src": "**/*",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
-  ]
+  "name": "memory-box-landing"
 }
