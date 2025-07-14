@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import AdminLayout from '../components/AdminLayout';
 import { useAuth } from '../lib/auth';
-import { db } from '../../config/firebase';
+import { db } from '../config/firebase';
 import { collection, query, orderBy, limit, onSnapshot, doc, getDoc } from 'firebase/firestore';
 
 export default function Webhooks() {

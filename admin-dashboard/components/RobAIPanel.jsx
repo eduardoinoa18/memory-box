@@ -11,7 +11,7 @@ import {
     addDoc,
     serverTimestamp 
 } from 'firebase/firestore';
-import { db } from '../../../config/firebase';
+import { db } from '../../config/firebase';
 */
 import { Brain, Activity, Tag, Clock, TrendingUp } from 'lucide-react';
 

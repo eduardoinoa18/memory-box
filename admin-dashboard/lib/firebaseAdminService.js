@@ -16,7 +16,7 @@ import {
     Timestamp
 } from 'firebase/firestore';
 import { ref, deleteObject, getDownloadURL, listAll } from 'firebase/storage';
-import { db, storage } from '../../config/firebase';
+import { db, storage } from '../config/firebase';
 
 class FirebaseAdminService {
     // User Management

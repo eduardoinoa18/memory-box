@@ -1,5 +1,5 @@
 // Integration management service for admin dashboard
-import { db } from '../../config/firebase';
+import { db } from '../config/firebase';
 import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 
 class IntegrationService {
