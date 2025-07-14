@@ -4,7 +4,7 @@
   "description": "Admin Dashboard for Memory Box - Business Management Portal",
   "main": "index.js",
   "engines": {
-    "node": ">=18.0.0",
+    "node": "18.x",
     "npm": ">=8.0.0"
   },
   "scripts": {
