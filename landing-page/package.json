@@ -5,7 +5,7 @@
   "main": "index.html",
   "scripts": {
     "dev": "npx live-server --port=3000 --host=localhost",
-    "build": "if not exist public mkdir public && copy index.html public\\index.html",
+    "build": "node build.js",
     "start": "npx live-server --port=3000 --host=localhost",
     "deploy": "npm run build && vercel --prod"
   },
