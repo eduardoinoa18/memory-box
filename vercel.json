@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "builds": [],
+  "redirects": [
+    {
+      "source": "/admin/(.*)",
+      "destination": "https://memory-box-admin.vercel.app/$1"
+    },
+    {
+      "source": "/",
+      "destination": "https://memory-box-landing.vercel.app/"
+    }
+  ]
+}

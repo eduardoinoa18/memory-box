@@ -1,0 +1,21 @@
+# Ignore mobile app files when deploying admin dashboard
+/screens/
+/components/MemoriesFeed.js
+/components/AuthScreen.js
+/components/WelcomeHeader.js
+/App*.js
+/babel.config.js
+/metro.config.js
+package.json
+package-lock.json
+node_modules/
+
+# Ignore mobile-specific files
+*.expo/
+*.expo-shared/
+.expo/
+.expo-shared/
+
+# Keep only admin-dashboard and landing-page for Vercel
+!/admin-dashboard/
+!/landing-page/
