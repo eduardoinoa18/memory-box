@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "npx live-server --port=3000 --host=localhost",
     "build": "if not exist public mkdir public && copy index.html public\\index.html",
-    "start": "npx live-server --port=3000 --host=localhost"
+    "start": "npx live-server --port=3000 --host=localhost",
+    "deploy": "npm run build && vercel --prod"
   },
   "devDependencies": {
     "live-server": "^1.2.2"

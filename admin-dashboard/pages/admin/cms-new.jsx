@@ -22,8 +22,7 @@ const CmsPage = () => {
     const [landingPageData, setLandingPageData] = useState({
         users: [],
         cms: {},
-        downloads: [],
-        analytics: { pageViews: 0, signUps: 0, downloads: 0 }
+        analytics: { pageViews: 0, signUps: 0 }
     });
 
     // Landing page form state
@@ -32,8 +31,6 @@ const CmsPage = () => {
         heroDescription: 'The easiest way to store, organize, and share your family\'s most treasured moments.',
         ctaTitle: 'Ready to preserve your family memories?',
         ctaDescription: 'Join thousands of families already using Memory Box',
-        appStoreLink: '',
-        googlePlayLink: '',
         features: [
             {
                 title: 'Effortless Uploads',
@@ -62,32 +59,27 @@ const CmsPage = () => {
         try {
             const users = JSON.parse(localStorage.getItem('memorybox_users') || '[]');
             const cms = JSON.parse(localStorage.getItem('memorybox_cms') || '{}');
-            const downloads = JSON.parse(localStorage.getItem('memorybox_downloads') || '[]');
             const pageViews = parseInt(localStorage.getItem('memorybox_pageviews') || '0');
             
             const data = {
                 users: users,
                 cms: cms,
-                downloads: downloads,
                 analytics: {
                     pageViews: pageViews,
-                    signUps: users.length,
-                    downloads: downloads.length
+                    signUps: users.length
                 }
             };
             
             setLandingPageData(data);
             
             // Load existing CMS data into form
-            if (cms.heroTitle || cms.heroDescription || cms.appStoreLink || cms.googlePlayLink) {
+            if (cms.heroTitle || cms.heroDescription) {
                 setLandingForm(prev => ({
                     ...prev,
                     heroTitle: cms.heroTitle || prev.heroTitle,
                     heroDescription: cms.heroDescription || prev.heroDescription,
                     ctaTitle: cms.ctaTitle || prev.ctaTitle,
-                    ctaDescription: cms.ctaDescription || prev.ctaDescription,
-                    appStoreLink: cms.appStoreLink || prev.appStoreLink,
-                    googlePlayLink: cms.googlePlayLink || prev.googlePlayLink
+                    ctaDescription: cms.ctaDescription || prev.ctaDescription
                 }));
             }
         } catch (error) {
@@ -104,8 +96,6 @@ const CmsPage = () => {
                 heroDescription: landingForm.heroDescription,
                 ctaTitle: landingForm.ctaTitle,
                 ctaDescription: landingForm.ctaDescription,
-                appStoreLink: landingForm.appStoreLink,
-                googlePlayLink: landingForm.googlePlayLink,
                 lastUpdated: new Date().toISOString()
             };
             
@@ -281,59 +271,6 @@ const CmsPage = () => {
                                     </div>
                                 </div>
 
-                                {/* Download Links Section */}
-                                <div>
-                                    <h3 className="text-md font-semibold text-gray-900 mb-4">
-                                        <Download className="w-4 h-4 inline mr-2" />
-                                        App Download Links
-                                    </h3>
-                                    <div className="space-y-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                🍎 App Store URL
-                                            </label>
-                                            <input
-                                                type="url"
-                                                value={landingForm.appStoreLink}
-                                                onChange={(e) => setLandingForm(prev => ({ ...prev, appStoreLink: e.target.value }))}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                placeholder="https://apps.apple.com/app/memory-box/id123456789"
-                                            />
-                                            <p className="text-xs text-gray-500 mt-1">
-                                                Enter the App Store URL where users can download your iOS app
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                🤖 Google Play URL
-                                            </label>
-                                            <input
-                                                type="url"
-                                                value={landingForm.googlePlayLink}
-                                                onChange={(e) => setLandingForm(prev => ({ ...prev, googlePlayLink: e.target.value }))}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                                placeholder="https://play.google.com/store/apps/details?id=com.memorybox.app"
-                                            />
-                                            <p className="text-xs text-gray-500 mt-1">
-                                                Enter the Google Play URL where users can download your Android app
-                                            </p>
-                                        </div>
-                                        <div className="bg-blue-50 p-4 rounded-lg">
-                                            <h4 className="text-sm font-medium text-blue-900 mb-2">📱 Download Link Status</h4>
-                                            <div className="space-y-2 text-sm">
-                                                <div className="flex items-center">
-                                                    <span className={`w-2 h-2 rounded-full mr-2 ${landingForm.appStoreLink ? 'bg-green-500' : 'bg-gray-400'}`}></span>
-                                                    App Store: {landingForm.appStoreLink ? 'Configured' : 'Not set'}
-                                                </div>
-                                                <div className="flex items-center">
-                                                    <span className={`w-2 h-2 rounded-full mr-2 ${landingForm.googlePlayLink ? 'bg-green-500' : 'bg-gray-400'}`}></span>
-                                                    Google Play: {landingForm.googlePlayLink ? 'Configured' : 'Not set'}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
                                 {/* Preview */}
                                 <div className="border-t pt-6">
                                     <h3 className="text-md font-semibold text-gray-900 mb-4">Preview</h3>
@@ -342,20 +279,9 @@ const CmsPage = () => {
                                             <h1 className="text-3xl font-bold text-gray-900 mb-4">{landingForm.heroTitle}</h1>
                                             <p className="text-lg text-gray-600">{landingForm.heroDescription}</p>
                                         </div>
-                                        <div className="bg-blue-600 text-white p-6 rounded-lg text-center mb-6">
+                                        <div className="bg-blue-600 text-white p-6 rounded-lg text-center">
                                             <h2 className="text-2xl font-bold mb-2">{landingForm.ctaTitle}</h2>
                                             <p className="text-blue-100">{landingForm.ctaDescription}</p>
-                                        </div>
-                                        <div className="text-center">
-                                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Download Our App</h3>
-                                            <div className="flex justify-center space-x-4">
-                                                <div className={`px-4 py-2 rounded-lg border-2 ${landingForm.appStoreLink ? 'bg-black text-white border-black' : 'bg-gray-200 text-gray-500 border-gray-300'}`}>
-                                                    🍎 App Store
-                                                </div>
-                                                <div className={`px-4 py-2 rounded-lg border-2 ${landingForm.googlePlayLink ? 'bg-green-600 text-white border-green-600' : 'bg-gray-200 text-gray-500 border-gray-300'}`}>
-                                                    🤖 Google Play
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -366,7 +292,7 @@ const CmsPage = () => {
 
                 {activeTab === 'analytics' && (
                     <div className="space-y-6">
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div className="bg-white p-6 rounded-lg border border-gray-200">
                                 <div className="flex items-center">
                                     <div className="p-2 bg-blue-100 rounded-lg">
@@ -393,18 +319,6 @@ const CmsPage = () => {
 
                             <div className="bg-white p-6 rounded-lg border border-gray-200">
                                 <div className="flex items-center">
-                                    <div className="p-2 bg-orange-100 rounded-lg">
-                                        <Download className="w-6 h-6 text-orange-600" />
-                                    </div>
-                                    <div className="ml-4">
-                                        <p className="text-sm font-medium text-gray-600">App Downloads</p>
-                                        <p className="text-2xl font-bold text-gray-900">{landingPageData.analytics.downloads}</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="bg-white p-6 rounded-lg border border-gray-200">
-                                <div className="flex items-center">
                                     <div className="p-2 bg-purple-100 rounded-lg">
                                         <BarChart3 className="w-6 h-6 text-purple-600" />
                                     </div>
@@ -420,42 +334,6 @@ const CmsPage = () => {
                                 </div>
                             </div>
                         </div>
-
-                        {/* Download Analytics Breakdown */}
-                        {landingPageData.downloads.length > 0 && (
-                            <div className="bg-white p-6 rounded-lg border border-gray-200">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Download Analytics</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-600 mb-2">Platform Breakdown</h4>
-                                        <div className="space-y-2">
-                                            <div className="flex justify-between">
-                                                <span className="text-sm text-gray-600">🍎 App Store</span>
-                                                <span className="text-sm font-semibold">
-                                                    {landingPageData.downloads.filter(d => d.platform === 'app-store').length}
-                                                </span>
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <span className="text-sm text-gray-600">🤖 Google Play</span>
-                                                <span className="text-sm font-semibold">
-                                                    {landingPageData.downloads.filter(d => d.platform === 'google-play').length}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h4 className="text-sm font-medium text-gray-600 mb-2">Recent Downloads</h4>
-                                        <div className="space-y-1">
-                                            {landingPageData.downloads.slice(-3).reverse().map((download, index) => (
-                                                <div key={index} className="text-xs text-gray-500">
-                                                    {download.platform === 'app-store' ? '🍎' : '🤖'} {formatDate(download.timestamp)}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
 
                         {landingPageData.cms.lastUpdated && (
                             <div className="bg-white p-6 rounded-lg border border-gray-200">

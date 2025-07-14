@@ -1,5 +1,11 @@
 {
   "version": 2,
   "name": "memory-box-landing",
-  "outputDirectory": "public"
+  "outputDirectory": "public",
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
 }
