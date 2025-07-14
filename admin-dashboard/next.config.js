@@ -2,9 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  experimental: {
-    outputStandalone: true,
-  },
+  output: 'standalone',
   // Webpack configuration for Firebase
   webpack: (config, { isServer }) => {
     if (!isServer) {
