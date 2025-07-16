@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "memory-box",
+  "name": "memory-box-app",
   "builds": [
     {
       "src": "web-preview.html",
@@ -9,7 +9,7 @@
   ],
   "routes": [
     {
-      "src": "/",
+      "src": "/(.*)",
       "dest": "/web-preview.html"
     }
   ]
