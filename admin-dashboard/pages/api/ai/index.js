@@ -1,92 +1,75 @@
 import { NextResponse } from 'next/server';
+import OpenAI from 'openai';
 
-// Mock AI response for now - replace with OpenAI integration later
+// Initialize OpenAI with API key from environment
+const openai = process.env.OPENAI_API_KEY ? new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+}) : null;
+
 export async function POST(request) {
     try {
         const { prompt, type = 'general' } = await request.json();
 
-        // Simulate AI processing delay
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
-        // Mock AI responses based on type
-        let response = '';
-
-        switch (type) {
-            case 'kpi_summary':
-                response = `🤖 **Rob's KPI Analysis**
-
-**📊 Key Performance Indicators:**
-- User growth is trending ${Math.random() > 0.5 ? 'upward' : 'stable'} this month
-- Memory uploads show ${Math.random() > 0.5 ? 'strong' : 'moderate'} engagement patterns
-- Storage usage indicates healthy platform utilization
-
-**🎯 Strategic Recommendations:**
-- Focus on user retention through enhanced onboarding
-- Implement storage optimization for better user experience
-- Consider premium feature promotions for free tier users
-
-**⚡ Action Items:**
-- Review inactive user segments for re-engagement opportunities
-- Optimize app performance based on usage patterns
-- Plan capacity scaling for anticipated growth`;
-                break;
-
-            case 'content_analysis':
-                response = `🔍 **Content Moderation Analysis**
-
-**📋 Content Review:**
-- ${Math.floor(Math.random() * 50) + 10} items require manual review
-- ${Math.floor(Math.random() * 5) + 1} potential policy violations detected
-- Overall content quality is ${Math.random() > 0.7 ? 'excellent' : 'good'}
-
-**🚨 Priority Actions:**
-- Review flagged content within 24 hours
-- Update content guidelines based on recent trends
-- Implement enhanced AI filtering for better accuracy`;
-                break;
-
-            case 'user_insights':
-                response = `👥 **User Behavior Insights**
-
-**📱 Usage Patterns:**
-- Peak usage times: ${Math.random() > 0.5 ? 'Evening (6-9 PM)' : 'Weekend mornings'}
-- Most popular features: Photo uploads, Family sharing, AI letters
-- User satisfaction score: ${(Math.random() * 2 + 3).toFixed(1)}/5
-
-**💡 Growth Opportunities:**
-- Increase social sharing features
-- Enhance mobile app performance
-- Expand AI capabilities for better user experience`;
-                break;
-
-            default:
-                response = `🤖 **Rob AI Assistant Response**
-
-Based on the data provided, here are my insights:
-
-${prompt ? prompt.substring(0, 200) + '...' : 'No specific data provided'}
-
-**Recommendations:**
-- Monitor key metrics regularly
-- Focus on user engagement and retention
-- Optimize platform performance continuously
-
-This is a mock response. In production, this would connect to OpenAI's API for intelligent analysis.`;
+        // If OpenAI is not configured, return helpful error
+        if (!openai) {
+            return NextResponse.json({ 
+                success: false, 
+                error: 'OpenAI API key not configured. Please add OPENAI_API_KEY to your environment variables.',
+                fallback: true
+            }, { status: 503 });
         }
+
+        // Create system prompt based on type
+        const systemPrompt = getSystemPrompt(type);
+
+        const completion = await openai.chat.completions.create({
+            model: "gpt-4-turbo-preview",
+            messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: prompt }
+            ],
+            max_tokens: 500,
+            temperature: 0.7,
+        });
+
+        const response = completion.choices[0].message.content;
 
         return NextResponse.json({ 
             success: true, 
             response,
             timestamp: new Date().toISOString(),
-            type
+            type,
+            model: "gpt-4-turbo-preview"
         });
 
     } catch (error) {
         console.error('AI API Error:', error);
         return NextResponse.json(
-            { success: false, error: 'Failed to generate AI response' },
+            { 
+                success: false, 
+                error: error.message || 'Failed to generate AI response',
+                fallback: true
+            },
             { status: 500 }
         );
+    }
+}
+
+function getSystemPrompt(type) {
+    const basePrompt = "You are Rob, an AI assistant for the Memory Box admin dashboard. You analyze platform data and provide actionable insights for platform optimization. Be concise, data-driven, and provide specific recommendations.";
+
+    switch (type) {
+        case 'kpi_summary':
+            return `${basePrompt} Focus on analyzing key performance indicators, user growth trends, and platform health metrics. Provide strategic recommendations for improvement.`;
+        
+        case 'content_analysis':
+            return `${basePrompt} Analyze content moderation data, user-generated content quality, and policy compliance. Recommend content strategy improvements.`;
+        
+        case 'user_insights':
+            return `${basePrompt} Analyze user behavior patterns, engagement metrics, and user journey data. Provide insights on user experience optimization.`;
+        
+        default:
+            return basePrompt;
     }
 }
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import AdminLayout from '../../layouts/AdminLayout';
-import apiService from '../../services/apiService';
+import { firebaseAdminService } from '../../lib/firebaseAdminService';
 import {
     Search,
     Filter,
@@ -46,6 +46,7 @@ const UsersPage = () => {
     const loadUsers = async () => {
         try {
             setLoading(true);
+            
             const params = {
                 page: currentPage,
                 limit: 20,
@@ -53,96 +54,24 @@ const UsersPage = () => {
                 search: searchTerm || undefined
             };
             
-            const response = await apiService.getUsers(params);
-            setUsers(response.users);
-            setFilteredUsers(response.users);
-            setTotalUsers(response.total);
-            setTotalPages(response.totalPages);
+            // Try to load real users from Firebase
+            const response = await firebaseAdminService.getUsers(params);
+            setUsers(response.users || []);
+            setFilteredUsers(response.users || []);
+            setTotalUsers(response.total || 0);
+            setTotalPages(response.totalPages || 1);
+            
         } catch (error) {
-            console.warn('API unavailable, using demo data:', error);
-            // Fallback to demo data
-            const mockUsers = generateMockUsers();
-            setUsers(mockUsers);
-            setFilteredUsers(mockUsers);
-            setTotalUsers(mockUsers.length);
-            setTotalPages(Math.ceil(mockUsers.length / 20));
+            console.error('Failed to load users:', error);
+            // Set empty state if Firebase is not configured
+            setUsers([]);
+            setFilteredUsers([]);
+            setTotalUsers(0);
+            setTotalPages(1);
         } finally {
             setLoading(false);
         }
     };
-
-    const generateMockUsers = () => [
-        {
-            id: '1',
-            name: 'Sarah Johnson',
-            email: 'sarah@example.com',
-            role: 'user',
-            plan: 'premium',
-            status: 'active',
-            joinDate: '2024-01-15',
-            lastActive: '2024-07-05',
-            memoriesCount: 157,
-            storageUsed: '2.3 GB',
-            revenue: 59.88,
-            avatar: '/api/placeholder/40/40'
-        },
-        {
-            id: '2',
-            name: 'Mike Chen',
-            email: 'mike@example.com',
-            role: 'user',
-            plan: 'family',
-            status: 'active',
-            joinDate: '2024-02-20',
-            lastActive: '2024-07-06',
-            memoriesCount: 342,
-            storageUsed: '5.7 GB',
-            revenue: 119.76,
-            avatar: '/api/placeholder/40/40'
-        },
-        {
-            id: '3',
-            name: 'Emma Wilson',
-            email: 'emma@example.com',
-            role: 'user',
-            plan: 'free',
-            status: 'active',
-            joinDate: '2024-03-10',
-            lastActive: '2024-07-04',
-            memoriesCount: 23,
-            storageUsed: '0.4 GB',
-            revenue: 0,
-            avatar: '/api/placeholder/40/40'
-        },
-        {
-            id: '4',
-            name: 'Alex Rodriguez',
-            email: 'alex@example.com',
-            role: 'user',
-            plan: 'premium',
-            status: 'suspended',
-            joinDate: '2024-01-05',
-            lastActive: '2024-06-30',
-            memoriesCount: 89,
-            storageUsed: '1.8 GB',
-            revenue: 29.94,
-            avatar: '/api/placeholder/40/40'
-        },
-        {
-            id: '5',
-            name: 'Lisa Park',
-            email: 'lisa@example.com',
-            role: 'moderator',
-            plan: 'family',
-            status: 'active',
-            joinDate: '2024-01-01',
-            lastActive: '2024-07-06',
-            memoriesCount: 201,
-            storageUsed: '3.2 GB',
-            revenue: 59.94,
-            avatar: '/api/placeholder/40/40'
-        }
-    ];
 
     const handleSearch = async (term) => {
         setSearchTerm(term);
@@ -168,7 +97,7 @@ const UsersPage = () => {
 
     const handleEditUser = async (user) => {
         try {
-            const fullUserData = await apiService.getUser(user.id);
+            const fullUserData = await firebaseAdminService.getUser(user.id);
             setSelectedUser(fullUserData);
             setShowUserModal(true);
         } catch (error) {
@@ -181,7 +110,7 @@ const UsersPage = () => {
     const handleDeleteUser = async (userId) => {
         if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
             try {
-                await apiService.deleteUser(userId);
+                await firebaseAdminService.deleteUser(userId);
                 await loadUsers();
                 alert('User deleted successfully');
             } catch (error) {
@@ -193,11 +122,14 @@ const UsersPage = () => {
 
     const handleSuspendUser = async (userId) => {
         try {
-            await apiService.suspendUser(userId);
+            await firebaseAdminService.suspendUser(userId);
             await loadUsers();
             alert('User suspended successfully');
         } catch (error) {
             console.error('Failed to suspend user:', error);
+            alert('Failed to suspend user. Please try again.');
+        }
+    };
             alert('Failed to suspend user. Please try again.');
         }
     };

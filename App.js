@@ -49,7 +49,6 @@ import {
 import AuthScreen from './components/AuthScreen';
 
 // Import services
-import demoDataService from './services/demoDataService';
 import authService from './services/authService';
 import subscriptionService from './services/subscriptionService';
 import exportBackupService from './services/exportBackupService';
