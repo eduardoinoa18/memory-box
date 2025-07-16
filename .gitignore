@@ -119,3 +119,4 @@ firestore-debug.log
 /ios/*.perspectivev3
 /ios/**/*sync/
 /ios/.xcode.env.local
+.vercel

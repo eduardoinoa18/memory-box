@@ -1277,354 +1277,447 @@ exports.aiSmartSearch = functions.https.onCall(async (data, context) => {
   }
 });
 
-// === AI HELPER FUNCTIONS === //
+// ========================================
+// ENHANCED MEMORY BOX FUNCTIONS (New)
+// ========================================
 
-async function generateLetterWithOpenAI(answers, userContext) {
-  const { recipient, timeframe, mood, topics, length, personal } = answers;
-
-  const prompt = `
-You are Rob, a warm and empathetic AI assistant who helps people write meaningful letters. 
-Create a heartfelt, personalized letter based on the following information:
-
-Letter Details:
-- Recipient: ${recipient}
-- When to open: ${timeframe}
-- Mood: ${mood}
-- Topics to cover: ${topics?.join(', ')}
-- Length preference: ${length}
-- Personal message: ${personal || 'None provided'}
-
-Writer Information:
-- Name: ${userContext.name}
-- Recent memories: ${userContext.recentMemories?.length || 0} memories captured recently
-
-Requirements:
-- Write in a warm, personal tone as if the writer is speaking directly to the recipient
-- Include references to the specified topics naturally
-- Match the desired mood and length
-- Make it feel authentic and heartfelt
-- Include personal touches based on the provided information
-- End with a meaningful closing
-
-Write the letter now:
-`;
-
+// Advanced memory upload with AI processing
+exports.processMemoryUpload = functions.storage.object().onFinalize(async (object) => {
   try {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [{ role: 'user', content: prompt }],
-      max_tokens: length === 'Short & Sweet' ? 300 : length === 'Medium Length' ? 600 : 900,
-      temperature: 0.7
+    const filePath = object.name;
+    const userId = filePath.split('/')[1]; // Assuming path: memories/{userId}/{file}
+    
+    if (!filePath.startsWith('memories/')) {
+      return null;
+    }
+
+    // Download the uploaded file
+    const bucket = storage.bucket(object.bucket);
+    const file = bucket.file(filePath);
+    const [metadata] = await file.getMetadata();
+    
+    // Generate thumbnail for images/videos
+    if (object.contentType && object.contentType.startsWith('image/')) {
+      await generateImageThumbnail(bucket, filePath);
+    } else if (object.contentType && object.contentType.startsWith('video/')) {
+      await generateVideoThumbnail(bucket, filePath);
+    }
+
+    // Extract metadata using AI (if enabled)
+    if (object.contentType && object.contentType.startsWith('image/')) {
+      const aiMetadata = await extractImageMetadata(file);
+      
+      // Update memory document with AI-generated metadata
+      const memoryId = filePath.split('/').pop().split('.')[0];
+      await db.collection('memories').doc(memoryId).update({
+        aiMetadata: aiMetadata,
+        processingComplete: true,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    }
+
+    console.log('Memory processing completed:', filePath);
+  } catch (error) {
+    console.error('Memory processing error:', error);
+  }
+});
+
+// Family invitation system
+exports.sendFamilyInvite = functions.https.onCall(async (data, context) => {
+  try {
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
+    }
+
+    const { familyId, email, message } = data;
+    const inviterUid = context.auth.uid;
+
+    // Verify user is family owner or admin
+    const familyDoc = await db.collection('families').doc(familyId).get();
+    const familyData = familyDoc.data();
+    
+    if (familyData.ownerId !== inviterUid && !familyData.admins?.includes(inviterUid)) {
+      throw new functions.https.HttpsError('permission-denied', 'Not authorized to invite to this family');
+    }
+
+    // Create invitation record
+    const inviteDoc = await db.collection('familyInvites').add({
+      familyId: familyId,
+      familyName: familyData.name,
+      inviterUid: inviterUid,
+      inviterName: context.auth.token.name || 'Family Member',
+      email: email,
+      message: message || '',
+      status: 'pending',
+      inviteCode: generateInviteCode(),
+      expiresAt: admin.firestore.Timestamp.fromDate(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)), // 7 days
+      createdAt: admin.firestore.FieldValue.serverTimestamp()
     });
 
-    return response.choices[0].message.content;
+    // Send invitation email
+    const inviteLink = `https://memorybox.app/invite/${inviteDoc.id}`;
+    await sendInvitationEmail(email, familyData.name, context.auth.token.name, inviteLink, message);
+
+    return { success: true, inviteId: inviteDoc.id };
   } catch (error) {
-    console.error('OpenAI API error:', error);
-    return generateFallbackLetter(answers, userContext);
+    console.error('Send family invite error:', error);
+    throw new functions.https.HttpsError('internal', error.message);
   }
+});
+
+// Accept family invitation
+exports.acceptFamilyInvite = functions.https.onCall(async (data, context) => {
+  try {
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
+    }
+
+    const { inviteId } = data;
+    const userId = context.auth.uid;
+
+    // Get invitation
+    const inviteDoc = await db.collection('familyInvites').doc(inviteId).get();
+    if (!inviteDoc.exists) {
+      throw new functions.https.HttpsError('not-found', 'Invitation not found');
+    }
+
+    const inviteData = inviteDoc.data();
+    
+    // Check if invitation is valid
+    if (inviteData.status !== 'pending') {
+      throw new functions.https.HttpsError('failed-precondition', 'Invitation already processed');
+    }
+    
+    if (inviteData.expiresAt.toDate() < new Date()) {
+      throw new functions.https.HttpsError('failed-precondition', 'Invitation has expired');
+    }
+
+    // Verify email matches
+    if (inviteData.email !== context.auth.token.email) {
+      throw new functions.https.HttpsError('permission-denied', 'Email does not match invitation');
+    }
+
+    // Add user to family
+    const familyRef = db.collection('families').doc(inviteData.familyId);
+    await familyRef.update({
+      members: admin.firestore.FieldValue.arrayUnion(userId),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    // Update user's family list
+    const userRef = db.collection('users').doc(userId);
+    await userRef.update({
+      familyIds: admin.firestore.FieldValue.arrayUnion(inviteData.familyId),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    // Mark invitation as accepted
+    await inviteDoc.ref.update({
+      status: 'accepted',
+      acceptedAt: admin.firestore.FieldValue.serverTimestamp(),
+      acceptedBy: userId
+    });
+
+    return { success: true, familyId: inviteData.familyId };
+  } catch (error) {
+    console.error('Accept family invite error:', error);
+    throw new functions.https.HttpsError('internal', error.message);
+  }
+});
+
+// Advanced search with AI
+exports.searchMemoriesAI = functions.https.onCall(async (data, context) => {
+  try {
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
+    }
+
+    const { query, userId, filters } = data;
+    
+    // Basic text search first
+    let memoriesQuery = db.collection('memories').where('userId', '==', userId);
+    
+    if (filters?.type) {
+      memoriesQuery = memoriesQuery.where('type', '==', filters.type);
+    }
+    
+    const memoriesSnapshot = await memoriesQuery.get();
+    let memories = memoriesSnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    // Use AI for semantic search if OpenAI is configured
+    if (query && openai) {
+      try {
+        // Generate embedding for search query
+        const embedding = await openai.embeddings.create({
+          model: "text-embedding-ada-002",
+          input: query,
+        });
+
+        // In a production app, you'd store embeddings in the database
+        // and use vector similarity search. For now, use simple keyword matching.
+        const queryLower = query.toLowerCase();
+        memories = memories.filter(memory => {
+          const titleMatch = memory.title?.toLowerCase().includes(queryLower);
+          const descMatch = memory.description?.toLowerCase().includes(queryLower);
+          const tagMatch = memory.tags?.some(tag => tag.toLowerCase().includes(queryLower));
+          const aiMatch = memory.aiMetadata?.description?.toLowerCase().includes(queryLower);
+          
+          return titleMatch || descMatch || tagMatch || aiMatch;
+        });
+
+        // Sort by relevance (simple scoring)
+        memories.sort((a, b) => {
+          const scoreA = calculateRelevanceScore(a, queryLower);
+          const scoreB = calculateRelevanceScore(b, queryLower);
+          return scoreB - scoreA;
+        });
+
+      } catch (aiError) {
+        console.warn('AI search failed, falling back to basic search:', aiError);
+      }
+    }
+
+    return { memories: memories.slice(0, 50) }; // Limit results
+  } catch (error) {
+    console.error('Search memories AI error:', error);
+    throw new functions.https.HttpsError('internal', error.message);
+  }
+});
+
+// Bulk operations for memories
+exports.bulkMemoryOperations = functions.https.onCall(async (data, context) => {
+  try {
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
+    }
+
+    const { operation, memoryIds, updates } = data;
+    const userId = context.auth.uid;
+
+    // Verify all memories belong to the user
+    const memoryPromises = memoryIds.map(id => db.collection('memories').doc(id).get());
+    const memoryDocs = await Promise.all(memoryPromises);
+    
+    for (const doc of memoryDocs) {
+      if (!doc.exists || doc.data().userId !== userId) {
+        throw new functions.https.HttpsError('permission-denied', 'Unauthorized access to memory');
+      }
+    }
+
+    const batch = db.batch();
+
+    switch (operation) {
+      case 'delete':
+        memoryIds.forEach(id => {
+          batch.delete(db.collection('memories').doc(id));
+        });
+        break;
+        
+      case 'update':
+        memoryIds.forEach(id => {
+          batch.update(db.collection('memories').doc(id), {
+            ...updates,
+            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+          });
+        });
+        break;
+        
+      case 'move_to_folder':
+        memoryIds.forEach(id => {
+          batch.update(db.collection('memories').doc(id), {
+            folderId: updates.folderId,
+            updatedAt: admin.firestore.FieldValue.serverTimestamp()
+          });
+        });
+        break;
+        
+      default:
+        throw new functions.https.HttpsError('invalid-argument', 'Invalid operation');
+    }
+
+    await batch.commit();
+    return { success: true, processedCount: memoryIds.length };
+  } catch (error) {
+    console.error('Bulk memory operations error:', error);
+    throw new functions.https.HttpsError('internal', error.message);
+  }
+});
+
+// Generate smart memory suggestions
+exports.generateMemorySuggestions = functions.https.onCall(async (data, context) => {
+  try {
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
+    }
+
+    const userId = context.auth.uid;
+    
+    // Get user's recent memories
+    const recentMemories = await db.collection('memories')
+      .where('userId', '==', userId)
+      .orderBy('createdAt', 'desc')
+      .limit(20)
+      .get();
+
+    const memories = recentMemories.docs.map(doc => doc.data());
+    
+    if (memories.length === 0) {
+      return { suggestions: [] };
+    }
+
+    // Generate suggestions based on patterns
+    const suggestions = [];
+    
+    // Time-based suggestions
+    const now = new Date();
+    const oneYearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+    
+    suggestions.push({
+      type: 'memory_lane',
+      title: 'Memory Lane',
+      description: `Memories from ${oneYearAgo.toLocaleDateString()}`,
+      action: 'search',
+      parameters: { dateRange: { start: oneYearAgo, end: oneYearAgo } }
+    });
+
+    // Folder suggestions
+    const folderCounts = {};
+    memories.forEach(memory => {
+      if (memory.folderId) {
+        folderCounts[memory.folderId] = (folderCounts[memory.folderId] || 0) + 1;
+      }
+    });
+
+    if (Object.keys(folderCounts).length > 0) {
+      const topFolder = Object.keys(folderCounts).reduce((a, b) => 
+        folderCounts[a] > folderCounts[b] ? a : b
+      );
+      
+      suggestions.push({
+        type: 'folder_highlight',
+        title: 'Most Active Folder',
+        description: 'Continue adding to your most used folder',
+        action: 'navigate_to_folder',
+        parameters: { folderId: topFolder }
+      });
+    }
+
+    // Type-based suggestions
+    const typeCounts = {};
+    memories.forEach(memory => {
+      typeCounts[memory.type] = (typeCounts[memory.type] || 0) + 1;
+    });
+
+    const topType = Object.keys(typeCounts).reduce((a, b) => 
+      typeCounts[a] > typeCounts[b] ? a : b
+    );
+
+    suggestions.push({
+      type: 'content_suggestion',
+      title: `More ${topType} memories?`,
+      description: `You seem to love ${topType} memories. Add more!`,
+      action: 'create_memory',
+      parameters: { type: topType }
+    });
+
+    return { suggestions: suggestions.slice(0, 5) };
+  } catch (error) {
+    console.error('Generate memory suggestions error:', error);
+    throw new functions.https.HttpsError('internal', error.message);
+  }
+});
+
+// ========================================
+// HELPER FUNCTIONS
+// ========================================
+
+async function generateImageThumbnail(bucket, filePath) {
+  // Implementation would use image processing library like Sharp
+  // For now, just log the action
+  console.log('Generating thumbnail for:', filePath);
 }
 
-async function analyzeImageWithOpenAI(imageUrl, description) {
+async function generateVideoThumbnail(bucket, filePath) {
+  // Implementation would use FFmpeg or similar
+  console.log('Generating video thumbnail for:', filePath);
+}
+
+async function extractImageMetadata(file) {
   try {
+    if (!openai) return null;
+
+    // Download file temporarily (in production, you'd use streaming)
+    const [buffer] = await file.download();
+    const base64Image = buffer.toString('base64');
+
     const response = await openai.chat.completions.create({
-      model: 'gpt-4-vision-preview',
+      model: "gpt-4-vision-preview",
       messages: [
         {
-          role: 'user',
+          role: "user",
           content: [
             {
-              type: 'text',
-              text: `Analyze this family memory image and provide insights. Context: ${description || 'No description provided'}. 
-              
-              Please provide:
-              1. A warm, family-friendly description
-              2. Suggested tags (5-8 tags)
-              3. Detected emotions
-              4. Suggested title
-              5. Category (family, celebration, travel, daily_life, etc.)
-              
-              Format as JSON with keys: description, tags, emotions, title, category`
+              type: "text",
+              text: "Analyze this image and provide a brief description, identify any people, objects, or locations. Return JSON with description, objects, people, and location fields."
             },
             {
-              type: 'image_url',
-              image_url: { url: imageUrl }
+              type: "image_url",
+              image_url: {
+                url: `data:image/jpeg;base64,${base64Image}`
+              }
             }
           ]
         }
       ],
-      max_tokens: 500
+      max_tokens: 300
     });
 
     return JSON.parse(response.choices[0].message.content);
   } catch (error) {
-    console.error('Image analysis error:', error);
-    return generateBasicAnalysis('', description, 'image');
+    console.error('Extract image metadata error:', error);
+    return null;
   }
 }
 
-async function generateAISuggestionsWithOpenAI(memories, userData, userContext) {
-  const memoryContext = memories.slice(0, 5).map(m => ({
-    type: m.type,
-    title: m.title,
-    date: m.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
-    tags: m.tags || []
-  }));
-
-  const prompt = `
-Based on a user's recent memory activity, generate 4 personalized memory suggestions.
-
-User Context:
-- Recent memories: ${JSON.stringify(memoryContext)}
-- Current season: ${getCurrentSeason()}
-- Time of year: ${new Date().getMonth() + 1}
-- User preferences: ${JSON.stringify(userData.profile?.preferences || {})}
-
-Generate suggestions that are:
-1. Timely and relevant to current season/time
-2. Personal based on their memory patterns
-3. Family-friendly and meaningful
-4. Actionable and specific
-
-For each suggestion, provide:
-- type: (seasonal, milestone, family, creative, reflection)
-- title: Engaging title
-- description: Why this suggestion is relevant now
-- icon: Single emoji
-- priority: high, medium, low
-
-Return as JSON array.
-`;
-
-  try {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [{ role: 'user', content: prompt }],
-      max_tokens: 600,
-      temperature: 0.8
-    });
-
-    return JSON.parse(response.choices[0].message.content);
-  } catch (error) {
-    console.error('AI suggestions error:', error);
-    return generateFallbackSuggestions(userContext);
-  }
+function generateInviteCode() {
+  return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 
-async function performSemanticSearch(query, memories) {
-  // This would use OpenAI embeddings for semantic search
-  // For now, return enhanced text search with AI categorization
-
-  const prompt = `
-User is searching for: "${query}"
-
-Help categorize this search and suggest related terms:
-- Search intent: (people, places, events, emotions, objects, time)
-- Suggested terms: 3-5 related search terms
-- Filters: suggested filters to apply
-
-Return as JSON with keys: intent, suggestedTerms, suggestedFilters
-`;
-
-  try {
-    const response = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [{ role: 'user', content: prompt }],
-      max_tokens: 200,
-      temperature: 0.3
-    });
-
-    const aiResponse = JSON.parse(response.choices[0].message.content);
-
-    // Perform enhanced text search based on AI insights
-    const results = performEnhancedTextSearch(query, memories, aiResponse);
-
-    return {
-      results,
-      suggestions: aiResponse.suggestedTerms
-    };
-  } catch (error) {
-    console.error('Semantic search error:', error);
-    return {
-      results: performBasicTextSearch(query, memories),
-      suggestions: []
-    };
-  }
+function calculateRelevanceScore(memory, query) {
+  let score = 0;
+  
+  if (memory.title?.toLowerCase().includes(query)) score += 10;
+  if (memory.description?.toLowerCase().includes(query)) score += 5;
+  if (memory.tags?.some(tag => tag.toLowerCase().includes(query))) score += 3;
+  if (memory.aiMetadata?.description?.toLowerCase().includes(query)) score += 2;
+  
+  return score;
 }
 
-// === UTILITY FUNCTIONS === //
-
-function generateFallbackLetter(answers, userContext) {
-  // ... existing fallback letter generation logic ...
-  // (keeping the existing implementation)
-  return "Your personalized letter content here...";
-}
-
-function generateBasicAnalysis(fileName, description, type) {
-  return {
-    description: `A precious ${type} memory captured with love`,
-    tags: ['memory', type, getCurrentSeason().toLowerCase()],
-    emotions: ['joy', 'nostalgia'],
-    title: `${new Date().toLocaleDateString()} Memory`,
-    category: 'family'
+async function sendInvitationEmail(email, familyName, inviterName, inviteLink, message) {
+  const emailContent = {
+    to: email,
+    from: 'noreply@memorybox.app',
+    subject: `${inviterName} invited you to join ${familyName} on Memory Box`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2>You're invited to join ${familyName}! 🎉</h2>
+        <p>${inviterName} has invited you to join their family on Memory Box.</p>
+        ${message ? `<p><em>"${message}"</em></p>` : ''}
+        <p>Memory Box is where families preserve and share their most precious moments together.</p>
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${inviteLink}" style="background: #667eea; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; display: inline-block;">
+            Join Family
+          </a>
+        </div>
+        <p>This invitation will expire in 7 days.</p>
+        <p>Best regards,<br>The Memory Box Team</p>
+      </div>
+    `
   };
-}
 
-function generateFallbackSuggestions(userContext) {
-  const season = getCurrentSeason();
-  return [
-    {
-      type: 'seasonal',
-      title: `Capture ${season} Moments`,
-      description: `Perfect time to document beautiful ${season.toLowerCase()} memories`,
-      icon: getSeasonIcon(season),
-      priority: 'high'
-    },
-    {
-      type: 'family',
-      title: 'Family Time',
-      description: 'Gather the family for some memory-making moments',
-      icon: '👨‍👩‍👧‍👦',
-      priority: 'medium'
-    }
-  ];
-}
-
-function generateMemoryStatistics(memories) {
-  const now = new Date();
-  const thisMonth = memories.filter(m => {
-    const date = m.createdAt?.toDate?.() || new Date(m.createdAt);
-    return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
-  });
-
-  return {
-    total: memories.length,
-    thisMonth: thisMonth.length,
-    avgPerMonth: Math.round(memories.length / Math.max(1, getMonthsSinceFirstMemory(memories))),
-    mostActiveMonth: getMostActiveMonth(memories),
-    longestStreak: calculateMemoryStreak(memories)
-  };
-}
-
-function analyzeMemoryTrends(memories) {
-  return {
-    uploadPattern: getUploadPattern(memories),
-    seasonalActivity: getSeasonalActivity(memories),
-    typeDistribution: getTypeDistribution(memories),
-    growthTrend: getGrowthTrend(memories)
-  };
-}
-
-function calculateAchievements(memories) {
-  const achievements = [];
-
-  if (memories.length >= 100) achievements.push({ title: 'Memory Keeper', description: '100+ memories preserved' });
-  if (memories.length >= 50) achievements.push({ title: 'Family Historian', description: '50+ memories captured' });
-  if (hasConsecutiveDays(memories, 7)) achievements.push({ title: 'Memory Streak', description: '7 days in a row' });
-
-  return achievements;
-}
-
-function generateRecommendations(memories) {
-  const recommendations = [];
-
-  if (memories.length > 50 && !hasRecentFolder(memories)) {
-    recommendations.push('Consider organizing memories into themed folders');
-  }
-
-  if (getTypeDistribution(memories).video < 0.1) {
-    recommendations.push('Try capturing some video memories for variety');
-  }
-
-  return recommendations;
-}
-
-function performBasicTextSearch(query, memories) {
-  const lowerQuery = query.toLowerCase();
-  return memories.filter(memory => {
-    const title = (memory.title || '').toLowerCase();
-    const description = (memory.description || '').toLowerCase();
-    const tags = (memory.tags || []).join(' ').toLowerCase();
-
-    return title.includes(lowerQuery) ||
-      description.includes(lowerQuery) ||
-      tags.includes(lowerQuery);
-  });
-}
-
-function performEnhancedTextSearch(query, memories, aiInsights) {
-  // Enhanced search using AI insights
-  const results = performBasicTextSearch(query, memories);
-
-  // Add fuzzy matching and related term search
-  if (aiInsights.suggestedTerms) {
-    aiInsights.suggestedTerms.forEach(term => {
-      const termResults = performBasicTextSearch(term, memories);
-      termResults.forEach(result => {
-        if (!results.find(r => r.id === result.id)) {
-          results.push({ ...result, relevanceScore: 0.8 });
-        }
-      });
-    });
-  }
-
-  return results;
-}
-
-function getCurrentSeason() {
-  const month = new Date().getMonth();
-  if (month >= 2 && month <= 4) return 'Spring';
-  if (month >= 5 && month <= 7) return 'Summer';
-  if (month >= 8 && month <= 10) return 'Fall';
-  return 'Winter';
-}
-
-function getSeasonIcon(season) {
-  const icons = { Spring: '🌸', Summer: '☀️', Fall: '🍂', Winter: '❄️' };
-  return icons[season] || '🌟';
-}
-
-// Additional utility functions...
-function getMonthsSinceFirstMemory(memories) {
-  if (memories.length === 0) return 1;
-  const firstMemory = memories[memories.length - 1];
-  const firstDate = firstMemory.createdAt?.toDate?.() || new Date(firstMemory.createdAt);
-  const now = new Date();
-  return Math.max(1, Math.floor((now - firstDate) / (1000 * 60 * 60 * 24 * 30)));
-}
-
-function getMostActiveMonth(memories) {
-  const months = {};
-  memories.forEach(memory => {
-    const date = memory.createdAt?.toDate?.() || new Date(memory.createdAt);
-    const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
-    months[monthKey] = (months[monthKey] || 0) + 1;
-  });
-
-  return Object.keys(months).reduce((a, b) => months[a] > months[b] ? a : b, '');
-}
-
-function calculateMemoryStreak(memories) {
-  // Calculate consecutive days with memories
-  const sortedDates = memories
-    .map(m => (m.createdAt?.toDate?.() || new Date(m.createdAt)).toDateString())
-    .filter((date, index, arr) => arr.indexOf(date) === index)
-    .sort();
-
-  let maxStreak = 0;
-  let currentStreak = 1;
-
-  for (let i = 1; i < sortedDates.length; i++) {
-    const prevDate = new Date(sortedDates[i - 1]);
-    const currDate = new Date(sortedDates[i]);
-    const diffDays = (currDate - prevDate) / (1000 * 60 * 60 * 24);
-
-    if (diffDays === 1) {
-      currentStreak++;
-    } else {
-      maxStreak = Math.max(maxStreak, currentStreak);
-      currentStreak = 1;
-    }
-  }
-
-  return Math.max(maxStreak, currentStreak);
+  await sgMail.send(emailContent);
 }
