@@ -1,0 +1,22 @@
+{
+  "name": "memory-box-app-mvp",
+  "version": 2,
+  "buildCommand": "npx expo export --platform web",
+  "outputDirectory": "dist",
+  "installCommand": "npm install",
+  "framework": null,
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "env": {
+    "EXPO_PUBLIC_FIREBASE_API_KEY": "@expo_public_firebase_api_key",
+    "EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN": "@expo_public_firebase_auth_domain",
+    "EXPO_PUBLIC_FIREBASE_PROJECT_ID": "@expo_public_firebase_project_id",
+    "EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET": "@expo_public_firebase_storage_bucket",
+    "EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID": "@expo_public_firebase_messaging_sender_id",
+    "EXPO_PUBLIC_FIREBASE_APP_ID": "@expo_public_firebase_app_id"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "name": "memory-box-mvp-v1",
+  "version": "1.0.0",
+  "description": "Memory Box MVP - Admin Panel, Landing Page, and Main App",
+  "private": true,
+  "workspaces": [
+    "admin",
+    "landing", 
+    "app",
+    "shared"
+  ],
+  "scripts": {
+    "install:all": "npm install && npm run install:admin && npm run install:landing && npm run install:app",
+    "install:admin": "cd admin && npm install",
+    "install:landing": "cd landing && npm install", 
+    "install:app": "cd app && npm install",
+    "dev:admin": "cd admin && npm run dev",
+    "dev:landing": "cd landing && npm run dev",
+    "dev:app": "cd app && npm run dev",
+    "build:all": "npm run build:shared && npm run build:admin && npm run build:landing && npm run build:app",
+    "build:shared": "cd shared && npm run build",
+    "build:admin": "cd admin && npm run build",
+    "build:landing": "cd landing && npm run build",
+    "build:app": "cd app && npm run build",
+    "deploy:all": "npm run build:all && npm run deploy:admin && npm run deploy:landing && npm run deploy:app",
+    "deploy:admin": "cd admin && vercel --prod",
+    "deploy:landing": "cd landing && vercel --prod",
+    "deploy:app": "cd app && vercel --prod",
+    "clean": "rm -rf node_modules admin/node_modules landing/node_modules app/node_modules shared/node_modules",
+    "setup": "powershell -ExecutionPolicy Bypass -File setup-mvp.ps1",
+    "status": "echo 'Memory Box MVP v1 - Status Check' && npm run check:admin && npm run check:landing && npm run check:app",
+    "check:admin": "cd admin && npm list --depth=0",
+    "check:landing": "cd landing && npm list --depth=0", 
+    "check:app": "cd app && npm list --depth=0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}

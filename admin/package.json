@@ -1,0 +1,35 @@
+{
+  "name": "@memory-box/admin",
+  "version": "1.0.0",
+  "description": "Admin Dashboard for Memory Box - Essential Features Only",
+  "main": "index.js",
+  "engines": {
+    "node": "18.x",
+    "npm": ">=8.0.0"
+  },
+  "scripts": {
+    "dev": "next dev -p 3001",
+    "build": "next build",
+    "start": "next start -p 3001",
+    "lint": "next lint",
+    "export": "next export"
+  },
+  "dependencies": {
+    "@memory-box/shared": "workspace:*",
+    "firebase": "^10.12.2",
+    "next": "^14.0.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tailwindcss": "^3.3.6",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.31",
+    "lucide-react": "^0.290.0",
+    "date-fns": "^2.30.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "eslint": "^8.53.0",
+    "eslint-config-next": "^14.0.3"
+  }
+}

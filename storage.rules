@@ -1,0 +1,41 @@
+rules_version = '2';
+
+// Firebase Storage Security Rules for Memory Box MVP
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // User memories - users can only access their own files
+    match /memories/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null && 
+                     request.auth.token.admin == true;
+    }
+    
+    // Legacy user uploads (maintain compatibility with existing structure)
+    match /user_uploads/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null && 
+                     request.auth.token.admin == true;
+    }
+    
+    // Public assets - readable by authenticated users
+    match /public/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+                      request.auth.token.admin == true;
+    }
+    
+    // Admin assets - admin only
+    match /admin/{allPaths=**} {
+      allow read, write: if request.auth != null && 
+                            request.auth.token.admin == true;
+    }
+    
+    // Temporary uploads - users can upload temporarily for processing
+    match /temp/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && 
+                            request.auth.uid == userId;
+      // These should be cleaned up by Cloud Functions
+    }
+  }
+}
