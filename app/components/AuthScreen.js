@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import { auth, db } from '@memory-box/shared';
+import { auth, db } from '../firebase-config';
 
 export default function AuthScreen() {
   const [email, setEmail] = useState('');

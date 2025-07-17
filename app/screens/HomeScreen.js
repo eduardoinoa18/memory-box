@@ -11,7 +11,7 @@ import {
   Dimensions
 } from 'react-native';
 import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
-import { db } from '@memory-box/shared';
+import { db } from '../firebase-config';
 
 const { width } = Dimensions.get('window');
 

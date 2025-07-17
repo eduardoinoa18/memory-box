@@ -113,6 +113,67 @@ export default function AdminDashboard() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        {/* Quick Navigation */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Landing Page</h3>
+                <p className="text-blue-100 text-sm">Marketing & User Onboarding</p>
+              </div>
+              <div className="w-12 h-12 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                <Eye className="w-6 h-6" />
+              </div>
+            </div>
+            <a 
+              href="#" 
+              onClick={() => window.open('https://memory-box-landing.vercel.app', '_blank')}
+              className="inline-flex items-center mt-4 text-sm font-medium text-white hover:text-blue-100 transition-colors cursor-pointer"
+            >
+              Visit Landing Page →
+            </a>
+          </div>
+
+          <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Main App</h3>
+                <p className="text-green-100 text-sm">Memory Box Mobile & Web</p>
+              </div>
+              <div className="w-12 h-12 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                <Activity className="w-6 h-6" />
+              </div>
+            </div>
+            <a 
+              href="#" 
+              onClick={() => window.open('https://memory-box-app.vercel.app', '_blank')}
+              className="inline-flex items-center mt-4 text-sm font-medium text-white hover:text-green-100 transition-colors cursor-pointer"
+            >
+              Open Main App →
+            </a>
+          </div>
+
+          <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">Firebase Console</h3>
+                <p className="text-purple-100 text-sm">Database & Analytics</p>
+              </div>
+              <div className="w-12 h-12 bg-white bg-opacity-20 rounded-lg flex items-center justify-center">
+                <Database className="w-6 h-6" />
+              </div>
+            </div>
+            <a 
+              href="https://console.firebase.google.com" 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center mt-4 text-sm font-medium text-white hover:text-purple-100 transition-colors"
+            >
+              Open Firebase →
+            </a>
+          </div>
+        </div>
+
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">

@@ -9,7 +9,7 @@ import {
   Alert
 } from 'react-native';
 import { signOut } from 'firebase/auth';
-import { auth } from '@memory-box/shared';
+import { auth } from '../firebase-config';
 
 export default function ProfileScreen({ user }) {
   const handleLogout = async () => {

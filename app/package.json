@@ -16,7 +16,6 @@
     "deploy:web": "npm run build:web && vercel deploy"
   },
   "dependencies": {
-    "@memory-box/shared": "workspace:*",
     "expo": "^53.0.19",
     "expo-camera": "~16.1.10",
     "expo-document-picker": "~12.4.1",

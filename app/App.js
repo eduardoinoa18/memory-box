@@ -17,7 +17,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 // Firebase imports
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth } from '@memory-box/shared';
+import { auth } from './firebase-config';
 
 // Essential components
 import AuthScreen from './components/AuthScreen';

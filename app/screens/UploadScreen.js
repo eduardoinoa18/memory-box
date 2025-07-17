@@ -16,7 +16,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc } from 'firebase/firestore';
-import { storage, db } from '@memory-box/shared';
+import { storage, db } from '../firebase-config';
 
 export default function UploadScreen({ user }) {
   const [selectedMedia, setSelectedMedia] = useState(null);

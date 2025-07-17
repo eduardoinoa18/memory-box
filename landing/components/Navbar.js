@@ -29,8 +29,8 @@ export default function Navbar() {
   };
 
   const openMainApp = () => {
-    // In production, this would be the deployed app URL
-    window.open('#', '_blank');
+    // Open the deployed main app
+    window.open('https://memory-box-app.vercel.app', '_blank');
   };
 
   return (
@@ -87,6 +87,14 @@ export default function Navbar() {
                       >
                         Sign Up
                       </Link>
+                      <a
+                        href="https://memory-box-admin.vercel.app"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-gray-500 hover:text-gray-700 px-2 py-1 rounded text-sm font-medium"
+                      >
+                        Admin
+                      </a>
                     </div>
                   )}
                 </>
