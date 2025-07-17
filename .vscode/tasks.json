@@ -1,0 +1,154 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Start Mobile App",
+			"type": "shell",
+			"command": "npx expo start",
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "new"
+			},
+			"isBackground": true,
+			"problemMatcher": []
+		},
+		{
+			"label": "🚀 Deploy Memory Box Production",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-ExecutionPolicy",
+				"Bypass",
+				"-File",
+				"./Belapp-1/deploy-production-mobile.ps1",
+				"-Platform",
+				"both",
+				"-Environment",
+				"production"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "new"
+			},
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "🔥 Deploy Firebase Backend",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-ExecutionPolicy",
+				"Bypass",
+				"-File",
+				"./Belapp-1/deploy-firebase.ps1",
+				"-Environment",
+				"production"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "new"
+			},
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "🔐 Setup EAS Secrets",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-ExecutionPolicy",
+				"Bypass",
+				"-File",
+				"./Belapp-1/setup-eas-secrets.ps1",
+				"-ConfigFile",
+				".env.production"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "new"
+			},
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "⚡ Complete Memory Box Setup",
+			"type": "shell",
+			"command": "powershell.exe",
+			"args": [
+				"-ExecutionPolicy",
+				"Bypass",
+				"-File",
+				"./Belapp-1/setup-complete-memory-box.ps1"
+			],
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "new"
+			},
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "📱 EAS Build Preview",
+			"type": "shell",
+			"command": "eas",
+			"args": [
+				"build",
+				"--platform",
+				"all",
+				"--profile",
+				"preview"
+			],
+			"options": {
+				"cwd": "./Belapp-1"
+			},
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "new"
+			},
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "🏪 EAS Submit to Stores",
+			"type": "shell",
+			"command": "eas",
+			"args": [
+				"submit",
+				"--platform",
+				"all",
+				"--latest"
+			],
+			"options": {
+				"cwd": "./Belapp-1"
+			},
+			"group": "build",
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "new"
+			},
+			"isBackground": false,
+			"problemMatcher": []
+		}
+	]
+}
