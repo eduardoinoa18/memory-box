@@ -1,0 +1,12 @@
+{
+  "name": "memory-box-web",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "npx serve ./",
+    "build": "echo 'Static files ready'",
+    "deploy": "vercel --prod"
+  },
+  "devDependencies": {
+    "serve": "^14.2.3"
+  }
+}

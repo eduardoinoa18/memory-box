@@ -1,0 +1,24 @@
+{
+  "name": "memory-box-minimal",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "expo start",
+    "web": "expo start --web --port 19006",
+    "android": "expo start --android",
+    "ios": "expo start --ios"
+  },
+  "dependencies": {
+    "expo": "~51.0.28",
+    "expo-status-bar": "~1.12.1",
+    "react": "18.2.0",
+    "react-native": "0.74.5",
+    "react-native-web": "~0.19.10",
+    "@expo/vector-icons": "^14.0.2",
+    "react-navigation": "^4.4.4",
+    "firebase": "^10.13.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0"
+  }
+}

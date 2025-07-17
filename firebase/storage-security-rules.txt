@@ -1,0 +1,62 @@
+// Firebase Storage Security Rules for Memory Box
+// Production-ready rules for Step 4C implementation
+// Keep this file updated with your deployed rules for version control
+
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Users can only access their own files in memories folder
+    // Pattern: users/{userId}/memories/{type}/{timestamp}.{extension}
+    match /users/{userId}/memories/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Admin access path for dashboard uploads and management
+    // Future: Admin users with custom token claims
+    match /admin/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.token.admin == true;
+    }
+    
+    // Admin users can read all user files (for moderation dashboard)
+    // Uses Firestore admin collection to verify admin status
+    match /{allPaths=**} {
+      allow read: if request.auth != null && 
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+    
+    // Deny all other access - safety net
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+/* 
+RULE EXPLANATION:
+
+1. USER ACCESS CONTROL:
+   - Users can only read/write files in their own folder: users/{userId}/memories/**
+   - Authentication required: request.auth != null
+   - User ID validation: request.auth.uid == userId
+
+2. ADMIN ACCESS:
+   - Future admin uploads: /admin/** (requires custom token claims)
+   - Admin moderation: Can read all files if exists in admins collection
+   - Dual admin verification system for flexibility
+
+3. SECURITY:
+   - Default deny: All other paths blocked
+   - No anonymous access allowed
+   - Protection against path traversal attacks
+
+DEPLOYMENT:
+Copy these rules to Firebase Console > Storage > Rules and click "Publish"
+
+TESTING:
+- Authenticated user upload: ✅ Should work
+- Cross-user file access: ❌ Should be denied  
+- Unauthenticated access: ❌ Should be denied
+- Admin dashboard access: ✅ Should work (if user in admins collection)
+*/
