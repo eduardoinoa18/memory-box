@@ -4,7 +4,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
-import { auth } from '@memory-box/shared';
+import { auth } from '../firebase-config';
 import Navbar from '../components/Navbar';
 
 export default function LoginPage() {

@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { Users, Database, Activity, Eye, LogOut, Shield } from 'lucide-react';
 import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
-import { auth, db, checkAdminRole } from '@memory-box/shared';
+import { auth, db, checkAdminRole } from '../../firebase-config';
 
 export default function AdminDashboard() {
   const router = useRouter();

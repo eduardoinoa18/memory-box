@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { Lock, User, Eye, EyeOff, Shield } from 'lucide-react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
-import { auth, db } from '@memory-box/shared';
+import { auth, db } from '../firebase-config';
 
 export default function AdminLogin() {
   const router = useRouter();

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
 import { collection, addDoc } from 'firebase/firestore';
-import { db } from '@memory-box/shared';
+import { db } from '../firebase-config';
 import Navbar from '../components/Navbar';
 import HeroSection from '../components/HeroSection';
 

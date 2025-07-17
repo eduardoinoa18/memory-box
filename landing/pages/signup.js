@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
-import { auth, db } from '@memory-box/shared';
+import { auth, db } from '../firebase-config';
 import Navbar from '../components/Navbar';
 
 export default function SignupPage() {

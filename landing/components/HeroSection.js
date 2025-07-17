@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '@memory-box/shared';
+import { auth } from '../firebase-config';
 
 export default function HeroSection() {
   const [user, setUser] = useState(null);

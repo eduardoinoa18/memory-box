@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth } from '@memory-box/shared';
+import { auth } from '../firebase-config';
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
