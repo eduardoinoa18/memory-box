@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Admin Login - Memory Box</title>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px 0;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .success {
+            color: #28a745;
+            background: #d4edda;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .info {
+            color: #0c5460;
+            background: #d1ecf1;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test Memory Box Admin Login</h1>
+        
+        <form id="testLoginForm">
+            <input type="email" id="email" placeholder="Admin Email" value="admin@memorybox.app" required>
+            <input type="password" id="password" placeholder="Admin Password" value="Pucca1829@" required>
+            <button type="submit">Test Login</button>
+        </form>
+        
+        <button onclick="signOut()">Sign Out</button>
+        
+        <div id="message"></div>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCiT8sCnJDRDB7T9nMADLEWOkLp_8BeX1c",
+            authDomain: "memory-box-app.firebaseapp.com",
+            projectId: "memory-box-app",
+            storageBucket: "memory-box-app.firebasestorage.app",
+            messagingSenderId: "651578998049",
+            appId: "1:651578998049:web:8117fafd7ab9ff45c31260"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Monitor auth state
+        auth.onAuthStateChanged(async (user) => {
+            const messageDiv = document.getElementById('message');
+            
+            if (user) {
+                messageDiv.innerHTML = '<div class="info">✅ User authenticated. Checking admin role...</div>';
+                
+                try {
+                    const userDoc = await db.collection('users').doc(user.uid).get();
+                    
+                    if (userDoc.exists) {
+                        const userData = userDoc.data();
+                        
+                        messageDiv.innerHTML = `
+                            <div class="success">
+                                ✅ Authentication successful!<br>
+                                <strong>Email:</strong> ${user.email}<br>
+                                <strong>UID:</strong> ${user.uid}<br>
+                                <strong>Role:</strong> ${userData.role || 'No role set'}<br>
+                                <strong>Display Name:</strong> ${userData.displayName || 'Not set'}<br>
+                                <strong>Created:</strong> ${userData.createdAt ? userData.createdAt.toDate() : 'Not set'}<br><br>
+                                ${userData.role === 'admin' ? '🎉 <strong>ADMIN ACCESS CONFIRMED!</strong>' : '❌ <strong>NOT AN ADMIN USER</strong>'}
+                            </div>
+                        `;
+                    } else {
+                        messageDiv.innerHTML = `
+                            <div class="error">
+                                ❌ User document not found in Firestore!<br>
+                                <strong>UID:</strong> ${user.uid}<br>
+                                Please create the user profile first.
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    messageDiv.innerHTML = `
+                        <div class="error">
+                            ❌ Error checking user role: ${error.message}
+                        </div>
+                    `;
+                }
+            } else {
+                messageDiv.innerHTML = '<div class="info">No user authenticated.</div>';
+            }
+        });
+
+        document.getElementById('testLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+            
+            try {
+                messageDiv.innerHTML = '<div style="color: blue;">Attempting login...</div>';
+                
+                await auth.signInWithEmailAndPassword(email, password);
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                messageDiv.innerHTML = `
+                    <div class="error">
+                        ❌ Login failed: ${error.message}
+                    </div>
+                `;
+            }
+        });
+
+        async function signOut() {
+            await auth.signOut();
+        }
+    </script>
+</body>
+</html>
