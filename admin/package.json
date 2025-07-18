@@ -4,7 +4,7 @@
   "description": "Admin Dashboard for Memory Box - Essential Features Only",
   "main": "index.js",
   "engines": {
-    "node": "18.x",
+    "node": "22.x",
     "npm": ">=8.0.0"
   },
   "scripts": {

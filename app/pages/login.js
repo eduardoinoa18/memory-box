@@ -2,39 +2,31 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Lock, User, Eye, EyeOff, Shield } from 'lucide-react';
-import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase-config';
 
 export default function AdminLogin() {
   const router = useRouter();
   const [credentials, setCredentials] = useState({
-    email: 'admin@memorybox.app',
-    password: 'Pucca1829@'
+    email: '',
+    password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [checking, setChecking] = useState(true);
 
   // Check if already authenticated and is admin
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        try {
-          const userDoc = await getDoc(doc(db, 'users', user.uid));
-          if (userDoc.exists() && userDoc.data().role === 'admin') {
-            router.push('/admin');
-            return;
-          }
-        } catch (error) {
-          console.error('Error checking user role:', error);
+    const checkAuth = async () => {
+      if (auth.currentUser) {
+        const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
+        if (userDoc.exists() && userDoc.data().role === 'admin') {
+          router.push('/admin');
         }
       }
-      setChecking(false);
-    });
-
-    return () => unsubscribe();
+    };
+    checkAuth();
   }, [router]);
 
   const handleInputChange = (field, value) => {
@@ -48,51 +40,22 @@ export default function AdminLogin() {
     setError('');
 
     try {
-      console.log('Attempting login with:', credentials.email);
-      
       const userCredential = await signInWithEmailAndPassword(auth, credentials.email, credentials.password);
       const user = userCredential.user;
       
-      console.log('User authenticated:', user.uid);
-      
       // Check if user is admin
       const userDoc = await getDoc(doc(db, 'users', user.uid));
-      
-      if (!userDoc.exists()) {
-        console.log('User document not found');
-        throw new Error('User profile not found. Please contact administrator.');
-      }
-      
-      const userData = userDoc.data();
-      console.log('User data:', userData);
-      
-      if (userData.role !== 'admin') {
-        console.log('User is not admin:', userData.role);
+      if (!userDoc.exists() || userDoc.data().role !== 'admin') {
         throw new Error('Access denied. Admin privileges required.');
       }
       
-      // Successful admin login
-      console.log('Admin login successful, redirecting...');
       router.push('/admin');
-      
     } catch (error) {
-      console.error('Login error:', error);
-      setError(error.message || 'Invalid credentials');
+      setError(error.message || 'Login failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }
   };
-
-  if (checking) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Checking authentication...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">

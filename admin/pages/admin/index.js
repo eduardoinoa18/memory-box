@@ -19,23 +19,41 @@ export default function AdminDashboard() {
   // Check authentication and admin role
   useEffect(() => {
     const checkAuth = async () => {
-      if (!auth.currentUser) {
+      const user = auth.currentUser;
+      if (!user) {
         router.push('/login');
         return;
       }
 
-      const isAdmin = await checkAdminRole(auth.currentUser);
-      if (!isAdmin) {
+      try {
+        const isAdmin = await checkAdminRole(user);
+        if (!isAdmin) {
+          alert('Access denied: Admin privileges required');
+          router.push('/login');
+          return;
+        }
+        
+        setAdminUser(user);
+        await loadDashboardData();
+      } catch (error) {
+        console.error('Error checking admin role:', error);
         router.push('/login');
         return;
       }
-
-      setAdminUser(auth.currentUser);
-      await loadDashboardData();
+      
       setLoading(false);
     };
 
-    checkAuth();
+    // Listen for auth state changes
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        checkAuth();
+      } else {
+        router.push('/login');
+      }
+    });
+
+    return () => unsubscribe();
   }, [router]);
 
   const loadDashboardData = async () => {
